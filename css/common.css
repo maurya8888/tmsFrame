@@ -1,0 +1,178 @@
+/* CSS Document */
+
+#page {
+    box-shadow: 0 0 1px #888888;
+    margin: 0 auto;
+    min-height: 120px;
+    padding: 20px;
+    position: relative;
+    top: 20px;
+    width: 1000px;
+}
+	
+#user_info {
+    position: absolute;
+}
+	
+#company_info {
+		position:absolute;
+		right:80px;
+	}
+	
+figure {
+    position: absolute;
+    right: -100px;
+    top: -60px;
+}
+
+#date-filters {
+	position: relative;
+	top: 100px;
+	height:20px;
+}
+
+.button {
+	-webkit-user-select:none;
+	-moz-user-select: none;
+    background-color: #C2D7EA;
+    box-shadow: 0 0 1px #AAAAAA;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 15px;
+    min-width: 50px;
+	padding: 0 5px;
+    margin-top:-2px;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.button:hover {
+    box-shadow: 0 0 1px;
+}
+
+.button:active {
+    box-shadow: 0 0 1px inset;
+}
+
+#update-filters {
+	position:relative;
+	top: 110px;
+}
+
+#week-filters {
+	position:relative;
+	top: 120px;
+}
+
+#calendar {
+	background-color:#fff;
+    box-shadow: 0 0 1px;
+    position: relative;
+    top: 130px;
+    padding: 5px;
+}
+
+#right {
+    left:214px;
+	position:absolute;
+	top:5px;
+}
+
+#left {
+	width:200px;
+}
+
+.left {
+	width:200px;
+	height:20px;
+}
+
+.right {
+	margin-left:-4px;
+	width:111px;
+	height:20px;
+	display: inline-block;
+}
+
+.heading {
+    background-color: #FFFFFF;
+    box-shadow: 0 0 1px;
+    display: inline-block;
+    font-size: 14px;
+    height: 18px;
+    margin-bottom: 4px;
+    margin-right: inherit;
+    padding-top: 2px;
+    text-align: center;
+}
+
+.non-head {
+    background-color: #FFFFFF;
+    box-shadow: 0 0 1px;
+    text-align: center;
+}
+
+.non-head.right:nth-child(7n+1) {
+    background-color: #F9F9CA;
+}
+
+.non-head.right:nth-child(7n+2) {
+    background-color: #F9F9CA;
+}
+
+.non-head.right > select {
+	background: none repeat scroll 0 0 transparent;
+	width:110px;
+	border:none;
+	position:relative;
+	top:-1px;
+}
+
+.heading.left {
+    margin-bottom: 5px;
+}
+
+.non-head.left {
+    font-size: 14px;
+    height: 18px;
+    padding-top: 2px;
+}
+
+.active {
+	box-shadow:0 0 2px !important;
+}
+
+select {
+	margin:0px;
+}
+
+#slider {
+    overflow: hidden;
+    width: 778px;
+	position:relative;
+	left:-1px;
+}
+
+#container {
+    width: 3108px;
+	transition: left 1.0s ease-out 0s;
+	position:relative;
+	left:1px;
+	top:1px;
+}
+
+#save-button {
+	position:absolute;
+	right:20px;
+	top:180px;
+}
+
+.disabled {
+	cursor:default !important;
+	opacity:0.5;
+}
+
+.disabled:hover, .disabled:active {
+	box-shadow:0 0 1px #aaa !important;
+}
