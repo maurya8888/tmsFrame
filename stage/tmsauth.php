@@ -46,9 +46,8 @@ class tmsauth extends tmsldap {
 						$this->password = $_SERVER['PHP_AUTH_PW'];
 						if($this->is_authenticated()) {
 								$query = new tmsConnector;
-								$tables = array('managers','superusers');
+								$tables = array('managers','superusers','transport');
 								foreach($tables as $tbl_name) {
-										//echo $tbl_name . '<br/>';
 										$param = array(
 												'Fields' => array('*'),
 												'Tables' => array($tbl_name),
@@ -61,6 +60,7 @@ class tmsauth extends tmsldap {
 											);
 										$result = $query -> select($param);
 										if(count($result) != 0) {
+												$result[0]['employeenumber'] = $this->employee_number;
 												$this->user_info = $result;
 												break;
 											}

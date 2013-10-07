@@ -29,7 +29,13 @@ class tmsconnector {
 			
 		private function wrap_quotes($str) {
 				if($str != '*') {
-					return '`' . $str . '`';
+					$tmp = explode(".",$str);
+					$s = '';
+					foreach($tmp as $v) {
+							$s .= '`'.$v.'`.';
+						}
+					$s = substr($s,0,-1);
+					return $s;
 				} else {
 						return $str;
 					}
@@ -365,6 +371,110 @@ class tmsconnector {
 				if(!$stmt->execute()) {
 						throw new Exception("Execute failed " . $stmt->error . " - connector.php.");
 					}
+			}
+		
+		private function ver_inner_join($param) {
+				//var_dump($param); echo '<br/>';
+				if(array_key_exists("select",$param) && array_key_exists("from",$param) && array_key_exists("inner_join",$param) && array_key_exists("on",$param) && array_key_exists("Where",$param) ) {
+						$l_keys_m = array('logical_op','cond');
+						$c_keys_m = array('col','op','val');
+						foreach($l_keys_m as $val) {
+								if(!array_key_exists($val,$param['Where'])) {
+										throw new Exception("Required key $val does not exists in the parameters. - connector.php.");
+									}
+							}
+						foreach($param['Where']['cond'] as $val) {
+								foreach($c_keys_m as $v) {
+										if(!array_key_exists($v,$val)) {
+												throw new Exception("Required key $v does exists in the parameters. - connector.php.");
+											}
+									}
+							}
+						if(count($param['Where']['logical_op'])+1 != count($param['Where']['cond'])) {
+								throw new Exception("Number of Conditions and Logic Operators are not correct. - connector.php.");
+							}
+						if(!is_array($param['select'])) {
+								throw new Exception("Array expected for the key 'Update' - connector.php.");
+							}
+						if(!is_array($param['from'])) {
+								throw new Exception("Array expected for the key 'Set' - connector.php.");
+							}
+						if(!is_array($param['inner_join'])) {
+								throw new Exception("Array expected for the key 'Set' - connector.php.");
+							}
+						if(!is_array($param['on'])) {
+								throw new Exception("Array expected for the key 'Set' - connector.php.");
+							}
+					} else {
+							throw new Exception("Required Keys does not exists in update parameters - connector.php.");
+						}
+			}
+			
+//$sql = "SELECT * FROM `employeesz1` INNER JOIN `q3m2y2013` ON `employeesz1`.`EMP ID` = `q3m2y2013`.`EMP ID` WHERE `q3m2y2013`.`Date` = '3' AND `q3m2y2013`.`Shift ID` = '8' AND `employeesz1`.`Zone` = '8'";
+/*
+$param = array (
+						'select' => array('*'),
+						'from' => array('employeesz1'),
+						'inner_join' => array($table),
+						'on' => array('employeesz1.EmpID',$table.'.EmpID'),
+						'Where' => array(
+								'logical_op' => array('AND','AND'),
+								'cond' => array(
+									array('col' => $table.'.Date', 'op' => '=', 'val' => $date),
+									array('col' => $table.'.ShiftID', 'op' => '=', 'val' => '1'),
+									array('col' => 'employeesz1.Zone', 'op' => '=', 'val' => '4')
+								)
+							)
+					);
+*/
+			
+		public function inner_join($param) {
+				$this->ver_inner_join($param);
+				$sql = "Select " . implode(', ',array_map(array($this,"wrap_quotes"),$param['select'])) . " FROM " . implode(', ',array_map(array($this,"wrap_quotes"),$param['from'])) . " INNER JOIN " . implode(', ',array_map(array($this,"wrap_quotes"),$param['inner_join'])) . " ON " . implode(' = ',array_map(array($this,"wrap_quotes"),$param['on']));
+				$log_str = ' WHERE';
+				$i = 0;
+				do {
+					if($i != 0) {
+							$log_str .= " " . $param['Where']['logical_op'][$i-1];
+						}
+					$log_str .= " " . $this->wrap_quotes($param['Where']['cond'][$i]['col']) . $param['Where']['cond'][$i]['op'] . " ?";
+					$bind_for[] = array($param['Where']['cond'][$i]['col'],$param['Where']['cond'][$i]['val']);
+					$i++;
+				} while($i<=count($param['Where']['logical_op']));
+				$sql .= $log_str;
+				//echo $sql;
+				//var_dump($bind_for);
+				$b_var[0] = '';
+				foreach($bind_for as $key => $val) {
+						$temp = explode(".",$val[0]);
+						$tbl = $temp[0];
+						$fld = $temp[1];
+						foreach($this->table_info as $t) {
+								if(strtolower($tbl) == strtolower($t['table_name'])) {
+										$keys = array_keys($t['col_info']);
+										foreach($keys as $k => $value) {
+												if(strtolower($value) == strtolower($fld)) {
+														$b_var[0] .= $t['col_info'][$value];
+													}
+											}
+									}
+							}
+						$b_var[] = &$bind_for[$key][1];
+					}
+				if(!$stmt = $this->con->prepare($sql)) {
+						throw new Exception("Prepare failed for query $sql - " . $this->con->error . " - connector.php.");
+					}
+				if(!call_user_func_array(array($stmt,'bind_param'),$b_var)) {
+						throw new Exception("Parameter Bind failed " . $stmt->error . " - connector.php.");
+					}
+				if(!$stmt->execute()) {
+						throw new Exception("Execute failed " . $stmt->error . " - connector.php.");
+					}
+				$result = $stmt->get_result();
+				$rows = $result->fetch_all(MYSQLI_ASSOC);
+				//var_dump($rows);
+				return $rows;
+				//var_dump($b_var);
 			}
 	}
 ?>

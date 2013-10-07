@@ -34,7 +34,17 @@
 			var container_height = 0;
 			var save_bound = false;
 			var track_changes = {};
-			var shiftselopt = '<select><option value="0">OFF</option><option value="1">0600 - 1500</option><option value="2">0700 - 1600</option><option value="3">1230 - 2130</option><option value="4">1300 - 2200</option><option value="5">1400 - 2300</option><option value="6">1800 - 0300</option><option value="7">2000 - 0500</option><option value="8">2100 - 0600</option><option value="9">2230 - 0730</option><option value="10">2330 - 0830</option></select>';
+			//var shiftselopt = '<select><option value="0">OFF</option><option value="1">0600 - 1500</option><option value="2">0700 - 1600</option><option value="3">1230 - 2130</option><option value="4">1300 - 2200</option><option value="5">1400 - 2300</option><option value="6">1800 - 0300</option><option value="7">2000 - 0500</option><option value="8">2100 - 0600</option><option value="9">2230 - 0730</option><option value="10">2330 - 0830</option></select>';
+			
+			<?php 
+				$str = '<select><option value="0">OFF</option>';
+				//var_dump($GLOBALS['return_value'][3]);
+				foreach($GLOBALS['return_value'][3] as $value) {
+						$str .= '<option value="' . $value['value'] . '">' . $value['shift'] . '</option>';
+					}
+				$str .= '</select>';
+				echo 'var shiftselopt = \'' . $str . '\'';
+			?>
 			
 			function select_option(el,atr,val) {
 					el.find("option:selected").removeAttr('selected');
@@ -58,7 +68,7 @@
 					shifts = jQuery.parseJSON(shifts);
 					$.each(shifts,function(key,value) {
 							$.each(shifts[key],function(i,v) {
-									select_option($("div.right[empid=" + key + "][data-date=d" + v['Date'] + "]").find("select"),"value",v['ShiftID']);
+									select_option($("div.right[empid=e" + key + "][data-date=d" + v['Date'] + "]").find("select"),"value",v['ShiftID']);
 								});
 						});
 				}
@@ -85,6 +95,11 @@
 						
 				$("#container").css("height",container_height + 2);
 				$("#page").height($("#page").height() + 130);
+				
+				$("#e" + $("#user_info").attr("data-empid")).css("font-weight","bold");
+				$("#e" + $("#user_info").attr("data-empid")).css("font-style","italic");
+				//$("div[empid=e" + $("#user_info").attr("data-empid") + "]").css("background-color","#98AAF9");
+				
 						
 				select_marked_shifts();
 
@@ -109,6 +124,15 @@
 								}
                 });
 				
+				$("#update-teaminfo").click(function(e) {
+						var avrsid = $("#user_info").attr("data-avrsid");
+						var manid = $("#user_info").attr("data-empid");
+						var data = avrsid + "#" + manid;
+                      $("#data").val(data);
+						$("#handle").val("update");
+						$("form#date").submit();
+                });
+				
 				$(".non-head.right > select").change(function(e) {
 					  if(!save_bound) {
 						  	save_bound = true;
@@ -117,7 +141,8 @@
 									var year = $("#year option:selected").val();
 									var month = $("#month option:selected").attr("adbmonth");
 									var avrsid = $("#user_info").attr("data-avrsid");
-									var data = year + "#" + month + "#" + avrsid + "#" + JSON.stringify(track_changes);
+									var manid = $("#user_info").attr("data-empid");
+									var data = year + "#" + month + "#" + avrsid + "#" + manid + "#" + JSON.stringify(track_changes);
 									$("#data").val(data);
 									$("#handle").val("save");
 									$("form#date").submit();
@@ -150,7 +175,8 @@
 					  var year = $("#year option:selected").val();
 					  var month = $("#month option:selected").attr("adbmonth");
 					  var avrsid = $("#user_info").attr("data-avrsid");
-					  var data = year + "#" + month + "#" + avrsid;
+					  var manid = $("#user_info").attr("data-empid");
+					  var data = year + "#" + month + "#" + avrsid + "#" + manid;
 					  $("#data").val(data);
 					$("form#date").submit();
 				});
@@ -162,7 +188,7 @@
 <body>
 	
 	<section id="page">
-		<section id="user_info" data-name="<?php echo $GLOBALS['user_info'][0]['Name']?>" data-avrsid="<?php echo $GLOBALS['user_info'][0]['avrsid']?>" data-ldap="<?php echo $GLOBALS['user_info'][0]['ldap']?>" data-bu="<?php echo $GLOBALS['user_info'][0]['bu']?>">Welcome - <?php echo $GLOBALS['user_info'][0]['Name']?></section>
+		<section id="user_info" data-name="<?php echo $GLOBALS['user_info'][0]['Name']?>" data-avrsid="<?php echo $GLOBALS['user_info'][0]['avrsid']?>" data-ldap="<?php echo $GLOBALS['user_info'][0]['ldap']?>" data-bu="<?php echo $GLOBALS['user_info'][0]['bu']?>" data-empid="<?php echo $GLOBALS['user_info'][0]['employeenumber']?>">Welcome - <?php echo $GLOBALS['user_info'][0]['Name']?></section>
 		<section id="company_info">
         	<?php echo $GLOBALS['config']['company']?>
            <figure>
@@ -207,6 +233,9 @@
                <div class="button">Week 4</div>
                <div class="button">Week 5</div>
            </section>
+           <section id="update-teaminfo">
+           	<div class="button">Update Team Info</div>
+           </section>
            <section id="save-button">
            	<div class="button disabled">Save</div>
            </section>
@@ -215,7 +244,7 @@
             		<div class="heading left">My Team</div>
                   <?php
 				  		foreach($GLOBALS['return_value'][1] as $value) {
-								echo "<div class='non-head left' id='" . $value['EmpID'] . "'>" . $value['Name'] . "</div>";
+								echo "<div class='non-head left' id='e" . $value['EmpID'] . "'>" . $value['Name'] . "</div>";
 							}
 				  	?>
             	</section>

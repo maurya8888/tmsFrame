@@ -12,18 +12,20 @@
 <head>
 	<meta charset="UTF-8">
 	<!-- InstanceBeginEditable name="doctitle" -->
-	<title></title>
+	<title>Managers Portal</title>
 	<!-- InstanceEndEditable -->
 	<script src="../js/jquery-2.0.3.min.js"></script>
     <link rel="stylesheet" href="../css/common.css"/>
     <!-- InstanceBeginEditable name="head" -->
     <script>
     	$(document).ready(function(e) {
+			 $("#page").height($("#page").height() + 100);
             $("#date-go").click(function(e) {
 				  var year = $("#year option:selected").val();
 				  var month = $("#month option:selected").attr("adbmonth");
 				  var avrsid = $("#user_info").attr("data-avrsid");
-				  var data = year + "#" + month + "#" + avrsid;
+				  var manid = $("#user_info").attr("data-empid");
+				  var data = year + "#" + month + "#" + avrsid + "#" + manid;
 				  $("#data").val(data);
                 $("form#date").submit();
 
@@ -36,7 +38,7 @@
 <body>
 	
 	<section id="page">
-		<section id="user_info" data-name="<?php echo $GLOBALS['user_info'][0]['Name']?>" data-avrsid="<?php echo $GLOBALS['user_info'][0]['avrsid']?>" data-ldap="<?php echo $GLOBALS['user_info'][0]['ldap']?>" data-bu="<?php echo $GLOBALS['user_info'][0]['bu']?>">Welcome - <?php echo $GLOBALS['user_info'][0]['Name']?></section>
+		<section id="user_info" data-name="<?php echo $GLOBALS['user_info'][0]['Name']?>" data-avrsid="<?php echo $GLOBALS['user_info'][0]['avrsid']?>" data-ldap="<?php echo $GLOBALS['user_info'][0]['ldap']?>" data-bu="<?php echo $GLOBALS['user_info'][0]['bu']?>" data-empid="<?php echo $GLOBALS['user_info'][0]['employeenumber']?>">Welcome - <?php echo $GLOBALS['user_info'][0]['Name']?></section>
 		<section id="company_info">
         	<?php echo $GLOBALS['config']['company']?>
            <figure>
